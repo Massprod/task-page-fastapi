@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 def create_new_user(user_data: CreateNewUser, db: Session) -> CreateNewUserResponse:
     """Insert new Db record with User data"""
-    if (username := user_data.username) and (password := user_data.password):
+    if (username := user_data.username.lower()) and (password := user_data.password):
         taken = db.query(DbUsers).filter_by(username=username).first()
         if taken:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
