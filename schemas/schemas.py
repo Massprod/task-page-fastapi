@@ -25,3 +25,12 @@ class CreateNewUserResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
+class CreateNewTask(BaseModel):
+    name: str = Field(default="stay calm",
+                      title="Name of a task",
+                      )
+    description: str = Field(default="always be calm",
+                             title="Description of a task",
+                             )
+
