@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-SQLALCHEMY_DB_URL = "sqlite:///database/tasks_page.db"
+SQLALCHEMY_DB_URL = "sqlite:///database/main_database.db"
 
 engine = create_engine(SQLALCHEMY_DB_URL)
 
