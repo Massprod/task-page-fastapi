@@ -2,12 +2,12 @@ from pydantic import BaseModel, Field
 
 
 class CreateNewUser(BaseModel):
-    username: str = Field(default="Marcus",
-                          title="Preferred username",
-                          min_length=2,
-                          max_length=50,
-                          )
-    password: str = Field(default="Aurelius",
+    login: str = Field(example="Marcus",
+                       title="Preferred username",
+                       min_length=2,
+                       max_length=50,
+                       )
+    password: str = Field(example="Aurelius",
                           title="Preferred password",
                           min_length=8,
                           max_length=50,
@@ -15,22 +15,17 @@ class CreateNewUser(BaseModel):
 
 
 class CreateNewUserResponse(BaseModel):
-    user_id: int = Field(default=1,
+    user_id: int = Field(example=1,
                          title="user id",
                          )
-    username: str = Field(default="Marcus",
-                          title="Registered username",
-                          )
+    login: str = Field(example="marcus",
+                       title="Registered username",
+                       )
 
     class Config:
         orm_mode = True
 
 
 class CreateNewTask(BaseModel):
-    name: str = Field(default="stay calm",
-                      title="Name of a task",
-                      )
-    description: str = Field(default="always be calm",
-                             title="Description of a task",
-                             )
-
+    name: str = Field(title="Name of a task")
+    description: str = Field(title="Description of a task")

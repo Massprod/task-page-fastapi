@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm.session import Session
 from database.database import db_session
 from schemas.schemas import CreateNewUser, CreateNewUserResponse
-from routers.register_fun.functional import create_new_user
+from routers.register_func.functional import create_new_user
 
 
 register_router = APIRouter(prefix="/register",
@@ -14,7 +14,7 @@ register_router = APIRouter(prefix="/register",
                       name="Register New User",
                       response_model=CreateNewUserResponse,
                       description="Register new User with given credentials",
-                      response_description="ID and Username for registered Entity"
+                      response_description="ID and Login for registered Entity",
                       )
 async def register_new_user(user_data: CreateNewUser,
                             db: Session = Depends(db_session),
