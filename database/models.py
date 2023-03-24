@@ -19,7 +19,7 @@ class DbTasks(Base):
 class DbUsers(Base):
     __tablename__ = "users"
     user_id = Column(Integer(), primary_key=True)
-    username = Column(String(length=50), nullable=False)
+    login = Column(String(length=50), nullable=False)
     password = Column(String(length=100), nullable=False)
 
     user_tasks = relationship("DbTasks", back_populates="user", cascade="all, delete, delete-orphan")
