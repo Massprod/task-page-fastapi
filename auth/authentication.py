@@ -13,6 +13,7 @@ auth_router = APIRouter(tags=["authentication"])
 def get_token(request: OAuth2PasswordRequestForm = Depends(),
               db: Session = Depends(db_session),
               ):
+    """Create and set authentication Token"""
     login = request.username.lower()
     password = request.password
     exist = get_user(user_id=None, login=login, db=db)
