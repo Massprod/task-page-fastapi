@@ -10,9 +10,9 @@ auth_router = APIRouter(tags=["authentication"])
 
 
 @auth_router.post("/token")
-def get_token(request: OAuth2PasswordRequestForm = Depends(),
-              db: Session = Depends(db_session),
-              ):
+async def get_token(request: OAuth2PasswordRequestForm = Depends(),
+                    db: Session = Depends(db_session),
+                    ):
     """Create and set authentication Token"""
     login = request.username.lower()
     password = request.password
@@ -28,11 +28,11 @@ def get_token(request: OAuth2PasswordRequestForm = Depends(),
                             detail="Password incorrect",
                             )
     access_token = oauth2.create_access_token(data={"sub": exist.login},
-                                              expire_minutes=5,
+                                              expire_minutes=30,
                                               )
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user_id": exist.user_id,
-        "login": exist.login,
-    }
+    token = {"access_token": access_token,
+             "token_type": "bearer",
+             "user_id": exist.user_id,
+             "login": exist.login,
+             }
+    return token
