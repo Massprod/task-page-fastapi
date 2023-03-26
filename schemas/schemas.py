@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Type
+from database.models import DbTasks
 
 
 class AccessToken(BaseModel):
@@ -70,7 +71,7 @@ class CreateNewTask(BaseModel):
                          )
 
 
-class ResponseNewTask(BaseModel):
+class NewTaskResponse(BaseModel):
     user_id: int = Field(example=1,
                          title="ID of called user",
                          )
@@ -108,8 +109,14 @@ class UpdateTask(BaseModel):
                          title="New task status",
                          )
 
+    class Config:
+        orm_mode = True
+
 
 class UpdateResponse(BaseModel):
+    user_id: int = Field(example=1,
+                         title="Active user ID",
+                         )
     updated: bool = True
     name: str = Field(example="stay close",
                       title="Updated name",
@@ -121,9 +128,18 @@ class UpdateResponse(BaseModel):
                              min_length=1,
                              max_length=300,
                              )
-    status: bool = Field(exaxmple=True,
+    status: bool = Field(example=True,
                          title="Updated status",
                          )
+
+    class Config:
+        orm_mode = True
+
+
+class AllTasksResponse(BaseModel):
+    user_id: int = Field(example=1,
+                         title="Active user ID")
+    user_tasks: list[UpdateTask]
 
     class Config:
         orm_mode = True
