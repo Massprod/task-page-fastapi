@@ -11,10 +11,10 @@ register_router = APIRouter(prefix="/register",
 
 
 @register_router.post("/new",
-                      name="Register New User",
+                      name="New User",
                       response_model=CreateNewUserResponse,
                       description="Register new User with given credentials",
-                      response_description="ID and Login for registered Entity",
+                      response_description="Successful response with Id and Login of registered User",
                       )
 async def register_new_user(user_data: CreateNewUser,
                             db: Session = Depends(db_session),

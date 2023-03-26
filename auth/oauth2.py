@@ -9,12 +9,13 @@ from database.crud.db_users import get_user
 
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
 
+# maybe change it to ENV,  but there's no risk in learning project
 SECRET_KEY = '3382fcde33c2b85e3ffb68acf0bdcac9499dcf427f105b1e1388a7d96a783130'
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def create_access_token(data: dict, expire_minutes: int = None):
+def create_access_token(data: dict, expire_minutes: int = None) -> str:
     """Create access Token with set expire time in minutes"""
     to_encode = data.copy()
     if expire_minutes:
@@ -29,7 +30,7 @@ def create_access_token(data: dict, expire_minutes: int = None):
 def get_current_user(token: str = Depends(oauth2_schema),
                      db: Session = Depends(db_session),
                      ):
-    """Get data on active user with provided Token"""
+    """Get data on current user of provided Token"""
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                           detail="Could not validate credentials",
                                           headers={"WWW-Authenticate": "Bearer"},
