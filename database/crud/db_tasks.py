@@ -32,21 +32,23 @@ def get_task(task_id: int, db: Session) -> Type[DbTasks] | None:
     return task
 
 
-def update_task(task_id: int, db: Session, request: UpdateTask) -> bool:
+def update_task(db: Session, request: UpdateTask) -> Type[DbTasks] | bool:
     """Find record in DbTasks with given task_id. Update record with new data."""
-    update_entity = {}
-    if new_name := request.name is not None:
-        update_entity[DbTasks.name] = new_name
-    if new_description := request.description is not None:
-        update_entity[DbTasks.description] = new_description
-    if new_status := request.status is not None:
-        update_entity[DbTasks.status] = new_status
-    exist = get_task(task_id=task_id, db=db)
-    if exist is None:
-        return False
-    exist.update(update_entity)
+    update_id = request.task_id
+    new_name = request.name
+    new_description = request.description
+    new_status = request.status
+    exist = db.query(DbTasks).filter_by(task_id=update_id).first()
+    if not exist:
+        return False   # can't use UPDATE on object given by .first()
+    db.query(DbTasks).filter_by(task_id=update_id).update({
+        DbTasks.name: new_name,
+        DbTasks.description: new_description,
+        DbTasks.status: new_status,
+    })
     db.commit()
-    return True
+    db.refresh(exist)
+    return exist
 
 
 def delete_task(task_id: int, db: Session) -> bool:
