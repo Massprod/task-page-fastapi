@@ -5,15 +5,21 @@ from database.database import db_session
 from database.crud.db_users import get_user
 from database.hash import Hash
 from auth import oauth2
+from schemas.schemas import AccessToken
 
 auth_router = APIRouter(tags=["authentication"])
 
 
-@auth_router.post("/token")
+@auth_router.post("/token",
+                  name="Oauth2 Token",
+                  response_model=AccessToken,
+                  description="Creating access token with set expiration time for correct Username/Password combo",
+                  response_description="Successful response with token, token_type and user identifiers"
+                  )
 async def get_token(request: OAuth2PasswordRequestForm = Depends(),
                     db: Session = Depends(db_session),
                     ):
-    """Create and set authentication Token"""
+    """Create and set authentication Token for correct Username/Password"""
     login = request.username.lower()
     password = request.password
     exist = get_user(user_id=None, login=login, db=db)
@@ -27,12 +33,12 @@ async def get_token(request: OAuth2PasswordRequestForm = Depends(),
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Password incorrect",
                             )
-    access_token = oauth2.create_access_token(data={"sub": exist.login},
-                                              expire_minutes=30,
+    user_id = exist.user_id
+    user_login = exist.login
+    access_token = oauth2.create_access_token(data={"sub": user_login},
+                                              expire_minutes=360,
                                               )
-    token = {"access_token": access_token,
-             "token_type": "bearer",
-             "user_id": exist.user_id,
-             "login": exist.login,
-             }
-    return token
+    return AccessToken(access_token=access_token,
+                       user_id=user_id,
+                       login=user_login,
+                       )
