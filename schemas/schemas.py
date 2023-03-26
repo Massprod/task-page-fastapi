@@ -136,10 +136,32 @@ class UpdateResponse(BaseModel):
         orm_mode = True
 
 
+class OneTaskResponse(BaseModel):
+    task_id: int = Field(example=1,
+                         title="ID of chosen Task",
+                         )
+    name: str = Field(example="New Name here",
+                      title="New task name",
+                      min_length=1,
+                      max_length=50,
+                      )
+    description: str = Field(example="New description here",
+                             title="New description",
+                             min_length=1,
+                             max_length=300,
+                             )
+    status: bool = Field(example=True,
+                         title="New task status",
+                         )
+
+    class Config:
+        orm_mode = True
+
+
 class AllTasksResponse(BaseModel):
     user_id: int = Field(example=1,
                          title="Active user ID")
-    user_tasks: list[UpdateTask]
+    user_tasks: list[OneTaskResponse]
 
     class Config:
         orm_mode = True
