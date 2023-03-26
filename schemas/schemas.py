@@ -1,6 +1,20 @@
 from pydantic import BaseModel, Field
 
 
+class AccessToken(BaseModel):
+    access_token: str = Field(example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjdXMiLCJleHAiOjE2Nzk4MTY0OTN9.9gvW7e7abYd_fmtNHnxbYfqPBMf66FjwmrPLHK3QckA",
+                              title="Created AccessToken",
+                              )
+    token_type: str = Field(default="bearer",
+                            title="Token type",
+                            )
+    user_id: int = Field(example=1,
+                         title="User_id associated with a token",
+                         )
+    login: str = Field(example="Marcus",
+                       title="Username associated with a token")
+
+
 class CreateNewUser(BaseModel):
     login: str = Field(example="Marcus",
                        title="Preferred username",
