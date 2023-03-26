@@ -16,7 +16,7 @@ register_router = APIRouter(prefix="/register",
                       description="Register new User with given credentials",
                       response_description="Successful response with Id and Login of registered User",
                       )
-async def register_new_user(user_data: CreateNewUser,
+async def register_new_user(request: CreateNewUser,
                             db: Session = Depends(db_session),
                             ):
-    return create_new_user(user_data, db)
+    return create_new_user(request, db)
