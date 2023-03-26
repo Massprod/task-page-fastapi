@@ -10,8 +10,6 @@ class DbTasks(Base):
     description = Column(String(length=300), nullable=False)
     user_id = Column(Integer(), ForeignKey("users.user_id"), nullable=True)
     status = Column(Boolean(), nullable=False)
-    date = Column(Date(), nullable=True)
-    time = Column(Date(), nullable=True)
 
     user = relationship("DbUsers", back_populates="user_tasks")
 
