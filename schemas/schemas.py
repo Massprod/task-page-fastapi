@@ -15,7 +15,8 @@ class AccessToken(BaseModel):
                          title="User_id associated with a token",
                          )
     login: str = Field(example="Marcus",
-                       title="Username associated with a token")
+                       title="Username associated with a token",
+                       )
 
 
 class ActiveUser(BaseModel):
@@ -92,9 +93,6 @@ class NewTaskResponse(BaseModel):
 
 
 class UpdateTask(BaseModel):
-    task_id: int = Field(example=1,
-                         title="ID of chosen Task",
-                         )
     name: str = Field(example="New Name here",
                       title="New task name",
                       min_length=1,
@@ -117,7 +115,8 @@ class UpdateResponse(BaseModel):
     user_id: int = Field(example=1,
                          title="Active user ID",
                          )
-    updated: bool = True
+    updated: int = Field(example=1,
+                         title="Updated task ID")
     name: str = Field(example="stay close",
                       title="Updated name",
                       min_length=1,
@@ -165,3 +164,4 @@ class AllTasksResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
