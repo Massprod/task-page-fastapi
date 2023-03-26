@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class AccessToken(BaseModel):
@@ -37,7 +38,7 @@ class CreateNewUser(BaseModel):
     password: str = Field(example="Aurelius",
                           title="Preferred password",
                           min_length=8,
-                          max_length=50,
+                          max_length=100,
                           )
 
 
@@ -56,9 +57,13 @@ class CreateNewUserResponse(BaseModel):
 class CreateNewTask(BaseModel):
     name: str = Field(example="stay calm",
                       title="Name of a task",
+                      min_length=1,
+                      max_length=50,
                       )
     description: str = Field(example="always calm",
                              title="Description of a task",
+                             min_length=1,
+                             max_length=300,
                              )
     status: bool = Field(default=False,
                          title="Status of a task",
@@ -67,14 +72,18 @@ class CreateNewTask(BaseModel):
 
 class ResponseNewTask(BaseModel):
     user_id: int = Field(example=1,
-                         title="Id of called user",
+                         title="ID of called user",
                          )
     added: bool = True
     name: str = Field(example="stay calm",
                       title="Name of a new Task",
+                      min_length=1,
+                      max_length=50,
                       )
     description: str = Field(example="always calm",
                              title="Description of a new task",
+                             min_length=1,
+                             max_length=300,
                              )
 
     class Config:
@@ -82,12 +91,39 @@ class ResponseNewTask(BaseModel):
 
 
 class UpdateTask(BaseModel):
-    name: str | None = Field(default=None,
-                             title="New task name",
+    task_id: int = Field(example=1,
+                         title="ID of chosen Task",
+                         )
+    name: str = Field(example="New Name here",
+                      title="New task name",
+                      min_length=1,
+                      max_length=50,
+                      )
+    description: str = Field(example="New description here",
+                             title="New description",
+                             min_length=1,
+                             max_length=300,
                              )
-    description: str | None = Field(default=None,
-                                    title="New task description",
-                                    )
-    status: bool | None = Field(default=None,
-                                title="New task status",
-                                )
+    status: bool = Field(example=True,
+                         title="New task status",
+                         )
+
+
+class UpdateResponse(BaseModel):
+    updated: bool = True
+    name: str = Field(example="stay close",
+                      title="Updated name",
+                      min_length=1,
+                      max_length=50,
+                      )
+    description: str = Field(example="stay closer",
+                             title="Updated description",
+                             min_length=1,
+                             max_length=300,
+                             )
+    status: bool = Field(exaxmple=True,
+                         title="Updated status",
+                         )
+
+    class Config:
+        orm_mode = True
