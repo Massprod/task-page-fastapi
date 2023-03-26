@@ -6,7 +6,7 @@ from typing import Type
 
 
 def create_user(db: Session, request: CreateNewUser) -> DbUsers:
-    """Create a new record in DbUsers with given data."""
+    """Create a new user record in DbUsers with given data."""
     login = request.login.lower()
     hash_password = Hash().bcrypt_pass(request.password)
     user = DbUsers(login=login,
@@ -28,7 +28,7 @@ def get_user(user_id: int | None, login: str | None, db: Session) -> Type[DbUser
     """Find record in DbUsers with given login or user_id. Returns found record."""
     get_login = login.lower()
     if user_id:
-        user = db.query(DbUsers).filter_by(user_id=user_id).first()
+        user = db.query(DbUsers).filter_by(id=user_id).first()
         return user
     user = db.query(DbUsers).filter_by(login=get_login).first()
     return user

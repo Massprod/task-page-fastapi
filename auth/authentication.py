@@ -13,15 +13,18 @@ auth_router = APIRouter(tags=["authentication"])
 @auth_router.post("/token",
                   name="Oauth2 Token",
                   response_model=AccessToken,
-                  description="Creating access token with set expiration time for correct Username/Password combo",
+                  description="Creating access token with set expiration time for correct Username/Password",
                   response_description="Successful response with token, token_type and user identifiers"
                   )
 async def get_token(request: OAuth2PasswordRequestForm = Depends(),
                     db: Session = Depends(db_session),
                     ):
-    """Create and set authentication Token for correct Username/Password"""
-    login = request.username.lower()
-    password = request.password
+    """
+    Create and set authentication Token for correct Username/Password.
+    Raise exception '403-forbidden' otherwise.
+    """
+    login = request.username.lower().strip().replace(" ", "")
+    password = request.password.strip().replace(" ", "")
     exist = get_user(user_id=None, login=login, db=db)
     if not exist:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -33,7 +36,7 @@ async def get_token(request: OAuth2PasswordRequestForm = Depends(),
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Password incorrect",
                             )
-    user_id = exist.user_id
+    user_id = exist.id
     user_login = exist.login
     access_token = oauth2.create_access_token(data={"sub": user_login},
                                               expire_minutes=360,

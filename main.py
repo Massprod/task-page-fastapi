@@ -5,7 +5,7 @@ from routers.task_router import task_router
 from auth.authentication import auth_router
 
 app = FastAPI(title="Tasks",
-              description="Tasks/Todo practice page",
+              description="CRUD with authentication practice",
               version="0.1",
               )
 
