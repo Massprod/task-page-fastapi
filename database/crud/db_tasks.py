@@ -53,9 +53,9 @@ def get_task(user: ActiveUser, task_id: int, db: Session) -> Type[DbTasks] | Non
     return task
 
 
-def update_task(user: ActiveUser, db: Session, request: UpdateTask) -> Type[DbTasks] | bool:
+def update_task(task_id: int, user: ActiveUser, db: Session, request: UpdateTask) -> Type[DbTasks] | bool:
     """Find record in DbTasks with given task_id. Update record with new data."""
-    update_id = request.task_id
+    update_id = task_id
     new_name = request.name.strip()
     new_description = request.description.strip()
     new_status = request.status
@@ -73,15 +73,25 @@ def update_task(user: ActiveUser, db: Session, request: UpdateTask) -> Type[DbTa
     return exist
 
 
-def delete_task(task_id: int, db: Session) -> bool:
+def delete_task(user: ActiveUser, task_id: int, db: Session) -> bool:
     """Delete record from DbTasks with given task_id"""
     del_id = task_id
-    task = get_task(task_id=del_id, db=db)
+    task = get_task(user=user, task_id=del_id, db=db)
     if task is None:
         return False
     db.delete(task)
     db.commit()
     return True
 
+
+def delete_all_records(user: ActiveUser, db: Session) -> bool:
+    user_id = user.id
+    all_tasks = db.query(DbUsers).filter_by(id=user_id).first().user_tasks
+    if len(all_tasks) == 0:
+        return False
+    for _ in all_tasks:
+        db.delete(_)
+    db.commit()
+    return True
 
 
