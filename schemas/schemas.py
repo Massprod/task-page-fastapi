@@ -5,7 +5,7 @@ class AccessToken(BaseModel):
     access_token: str = Field(
         example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjdXMiLCJleHAiOjE2Nzk4MTY0OTN9.9gvW7e7abYd_fmtNHnxbYfqPBMf66FjwmrPLHK3QckA",
         title="Created AccessToken",
-        )
+    )
     token_type: str = Field(default="bearer",
                             title="Token type",
                             )
@@ -14,6 +14,18 @@ class AccessToken(BaseModel):
                          )
     login: str = Field(example="Marcus",
                        title="Username associated with a token")
+
+
+class ActiveUser(BaseModel):
+    id: int = Field(example=1,
+                    title="Authenticated user Id",
+                    )
+    login: str = Field(example="Marcus",
+                       title="Authenticated user Username",
+                       )
+
+    class Config:
+        orm_mode = True
 
 
 class CreateNewUser(BaseModel):
@@ -67,3 +79,15 @@ class ResponseNewTask(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateTask(BaseModel):
+    name: str | None = Field(default=None,
+                             title="New task name",
+                             )
+    description: str | None = Field(default=None,
+                                    title="New task description",
+                                    )
+    status: bool | None = Field(default=None,
+                                title="New task status",
+                                )
