@@ -7,7 +7,7 @@ from typing import Type
 
 def create_user(db: Session, request: CreateNewUser) -> DbUsers:
     """Create a new user record in DbUsers with given data."""
-    login = request.login.lower()
+    login = request.login
     hash_password = Hash().bcrypt_pass(request.password)
     user = DbUsers(login=login,
                    password=hash_password,
