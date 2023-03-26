@@ -1,20 +1,19 @@
 from sqlalchemy.orm import Session
-from database.models import DbTasks, DbUsers
-from typing import Type
 from schemas.schemas import CreateNewTask, NewTaskResponse, ActiveUser, UpdateTask
 from schemas.schemas import AllTasksResponse, UpdateResponse, OneTaskResponse
-from database.crud.db_tasks import create_task, update_task, get_all_tasks, get_task, validate_user_task
+from database.crud.db_tasks import create_task, update_task, get_all_tasks, get_task, delete_task, delete_all_records
 from fastapi import HTTPException, status
+from fastapi.responses import HTMLResponse
 
 
 def create_new_task(user: ActiveUser, db: Session, request: CreateNewTask) -> NewTaskResponse:
-    """Create a new Task record."""
+    """Create a new Task record for Active user"""
     new_task = create_task(user=user, db=db, request=request)
     return new_task
 
 
 def return_all_tasks(current_user: ActiveUser, db: Session) -> AllTasksResponse:
-    """Return all task records for Active user ID"""
+    """Return all existing task records for Active user"""
     user_tasks = get_all_tasks(user=current_user, db=db)
     return AllTasksResponse(user_id=current_user.id,
                             user_tasks=user_tasks,
@@ -22,7 +21,7 @@ def return_all_tasks(current_user: ActiveUser, db: Session) -> AllTasksResponse:
 
 
 def return_one_task(user: ActiveUser, task_id: int, db: Session) -> OneTaskResponse:
-    """Return task for given ID"""
+    """Return task for given ID, if it's exist and created by Active user"""
     task = get_task(user=user, task_id=task_id, db=db)
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -34,17 +33,37 @@ def return_one_task(user: ActiveUser, task_id: int, db: Session) -> OneTaskRespo
                            )
 
 
-def update_existing_task(user: ActiveUser, request: UpdateTask, db: Session) -> UpdateResponse:
-    """Update and return updated Task info for """
+def update_existing_task(user: ActiveUser, task_id: int, request: UpdateTask, db: Session) -> UpdateResponse:
+    """Update and return updated Task info, if it's exist and created by Active user"""
     user_id = user.id
-    updated = update_task(user=user, db=db, request=request)
+    updated = update_task(task_id=task_id, user=user, db=db, request=request)
     if updated:
         return UpdateResponse(user_id=user_id,
-                              updated=True,
+                              updated=task_id,
                               name=updated.name,
                               description=updated.description,
                               status=updated.status,
                               )
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Task with ID: {request.task_id} not found.",
+                        detail=f"Task with ID: {task_id} not found.",
+                        )
+
+
+def delete_one_task(user: ActiveUser, task_id: int, db: Session) -> HTMLResponse:
+    """Delete one task record, if it's exist and created by Active user"""
+    deleted = delete_task(user=user, task_id=task_id, db=db)
+    if deleted:
+        return HTMLResponse(status_code=status.HTTP_204_NO_CONTENT)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Task with ID: {task_id} not found",
+                        )
+
+
+def delete_all_tasks(user: ActiveUser, db: Session) -> HTMLResponse:
+    """Delete all task records created by Active user"""
+    deleted = delete_all_records(user=user, db=db)
+    if deleted:
+        return HTMLResponse(status_code=status.HTTP_204_NO_CONTENT)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"No records for user_id: {user.id}",
                         )
