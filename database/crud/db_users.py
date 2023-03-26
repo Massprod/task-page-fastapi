@@ -36,8 +36,8 @@ def get_user(user_id: int | None, login: str | None, db: Session) -> Type[DbUser
 
 def update_user(user_id: int | None, login: str | None, db: Session, request: CreateNewUser) -> Type[DbUsers] | bool:
     """Find record in DbUsers with given user_id or login. Update record with new data."""
-    new_login = request.login.lower()
-    new_hash_password = Hash().bcrypt_pass(request.password)
+    new_login = request.login.lower().strip()
+    new_hash_password = Hash().bcrypt_pass(request.password).strip()
     if user_id:
         user = get_user(login=None, user_id=user_id, db=db)
         if user is None:

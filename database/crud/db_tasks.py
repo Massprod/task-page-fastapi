@@ -22,7 +22,7 @@ def create_task(user: ActiveUser, db: Session, request: CreateNewTask) -> DbTask
 def get_all_tasks(user: ActiveUser, db: Session) -> list[Type[DbTasks] | None]:
     """Find all records in DbTasks for active user and return them."""
     user_id = user.id
-    tasks = db.query(DbTasks).filter_by(id=user_id).all()
+    tasks = db.query(DbTasks).filter_by(user_id=user_id).all()
     return tasks
 
 
@@ -35,8 +35,8 @@ def get_task(task_id: int, db: Session) -> Type[DbTasks] | None:
 def update_task(db: Session, request: UpdateTask) -> Type[DbTasks] | bool:
     """Find record in DbTasks with given task_id. Update record with new data."""
     update_id = request.task_id
-    new_name = request.name
-    new_description = request.description
+    new_name = request.name.strip()
+    new_description = request.description.strip()
     new_status = request.status
     exist = db.query(DbTasks).filter_by(task_id=update_id).first()
     if not exist:
