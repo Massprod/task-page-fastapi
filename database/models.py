@@ -5,18 +5,18 @@ from sqlalchemy.orm import relationship
 
 class DbTasks(Base):
     __tablename__ = "tasks"
-    id = Column(Integer(), primary_key=True)
-    name = Column(String(length=50), nullable=True)
+    task_id = Column(Integer(), primary_key=True)
+    name = Column(String(length=50), nullable=False)
     description = Column(String(length=300), nullable=False)
-    user_id = Column(Integer(), ForeignKey("users.user_id"), nullable=True)
     status = Column(Boolean(), nullable=False)
 
+    user_id = Column(Integer(), ForeignKey("users.id"), nullable=False)
     user = relationship("DbUsers", back_populates="user_tasks")
 
 
 class DbUsers(Base):
     __tablename__ = "users"
-    user_id = Column(Integer(), primary_key=True)
+    id = Column(Integer(), primary_key=True)
     login = Column(String(length=50), nullable=False)
     password = Column(String(length=100), nullable=False)
 
