@@ -2,9 +2,10 @@ from pydantic import BaseModel, Field
 
 
 class AccessToken(BaseModel):
-    access_token: str = Field(example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjdXMiLCJleHAiOjE2Nzk4MTY0OTN9.9gvW7e7abYd_fmtNHnxbYfqPBMf66FjwmrPLHK3QckA",
-                              title="Created AccessToken",
-                              )
+    access_token: str = Field(
+        example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJjdXMiLCJleHAiOjE2Nzk4MTY0OTN9.9gvW7e7abYd_fmtNHnxbYfqPBMf66FjwmrPLHK3QckA",
+        title="Created AccessToken",
+        )
     token_type: str = Field(default="bearer",
                             title="Token type",
                             )
@@ -29,9 +30,9 @@ class CreateNewUser(BaseModel):
 
 
 class CreateNewUserResponse(BaseModel):
-    user_id: int = Field(example=1,
-                         title="user id",
-                         )
+    id: int = Field(example=1,
+                    title="user id",
+                    )
     login: str = Field(example="marcus",
                        title="Registered username",
                        )
@@ -41,5 +42,28 @@ class CreateNewUserResponse(BaseModel):
 
 
 class CreateNewTask(BaseModel):
-    name: str = Field(title="Name of a task")
-    description: str = Field(title="Description of a task")
+    name: str = Field(example="stay calm",
+                      title="Name of a task",
+                      )
+    description: str = Field(example="always calm",
+                             title="Description of a task",
+                             )
+    status: bool = Field(default=False,
+                         title="Status of a task",
+                         )
+
+
+class ResponseNewTask(BaseModel):
+    user_id: int = Field(example=1,
+                         title="Id of called user",
+                         )
+    added: bool = True
+    name: str = Field(example="stay calm",
+                      title="Name of a new Task",
+                      )
+    description: str = Field(example="always calm",
+                             title="Description of a new task",
+                             )
+
+    class Config:
+        orm_mode = True
