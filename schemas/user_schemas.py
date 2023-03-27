@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from schemas.task_schemas import OneTaskResponse
 
 
 class AccessToken(BaseModel):
@@ -71,10 +72,36 @@ class UpdateUser(BaseModel):
 
 class UpdateUserResponse(BaseModel):
     id: int = Field(example=2,
-                    title="Id of a user which data was updated")
+                    title="Id of a user which data was updated",
+                    )
     login: str = Field(example="Mark",
                        title="Updated username",
                        )
 
     class Config:
         orm_mode = True
+
+
+class GetUser(BaseModel):
+    id: int = Field(example=2,
+                    title="Id of searched User",
+                    )
+    login: str = Field(example="Mark",
+                       title="Login of searched user",
+                       )
+    user_tasks: list[OneTaskResponse]
+
+    class Config:
+        orm_mode = True
+
+
+class User(BaseModel):
+    id: int
+    login: str
+
+    class Config:
+        orm_mode = True
+
+
+class GetAllUsers(BaseModel):
+    __root__: list[User]
