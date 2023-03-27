@@ -32,7 +32,9 @@ def get_current_user(token: str = Depends(oauth2_schema),
                      ):
     """Get data on current user of provided JWT-token."""
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail="Could not validate credentials",
+                                          detail="Could not validate credentials. "
+                                                 "Check if you're using correct token. "
+                                                 "Create a New one if you changed User credentials recently.",
                                           headers={"WWW-Authenticate": "Bearer"},
                                           )
     try:
