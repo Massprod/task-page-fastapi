@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 
 
 def validate_user_id(current_user: ActiveUser, user_id: int):
-    """Validate that used user_id is Active user"""
+    """Validate that used given user_id for update/delete is currently Active user"""
     current_user_id = current_user.id
     validate_id = user_id
     if current_user_id == validate_id:
@@ -50,7 +50,7 @@ def get_user(user_id: int | None, login: str | None, db: Session) -> Type[DbUser
 
 
 def update_user(user_id: int | None, db: Session, request: UpdateUser) -> Type[DbUsers] | bool:
-    """Find record in DbUsers with given user_id or login. Update record with new data."""
+    """Find record in DbUsers with given user_id and Update record with new data."""
     if user_id == 1:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Admin can't be modified after creation",
@@ -69,7 +69,7 @@ def update_user(user_id: int | None, db: Session, request: UpdateUser) -> Type[D
 
 
 def delete_user(user_id: int | None, db: Session) -> bool:
-    """Delete record from DbUsers with given user_id or login."""
+    """Delete record from DbUsers with given user_id."""
     if user_id == 1:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Admin Id can't be deleted",

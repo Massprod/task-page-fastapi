@@ -38,7 +38,7 @@ async def update_exist_user(request: UpdateUser,
 
 @user_router.delete("{user_id}",
                     name="Delete User",
-                    description="Delete user data from Db with given UserId as identifier",
+                    description="Delete user and all associated Tasks data from Db with given UserId as identifier",
                     )
 async def delete_exist_user(user_id: int = Path(title="User Id",
                                                 description="Id of registered User",
