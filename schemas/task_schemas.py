@@ -104,7 +104,8 @@ class OneTaskResponse(BaseModel):
 
 class AllTasksResponse(BaseModel):
     user_id: int = Field(example=1,
-                         title="Active user ID")
+                         title="Active user ID",
+                         )
     user_tasks: list[OneTaskResponse]
 
     class Config:

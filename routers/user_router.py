@@ -31,6 +31,7 @@ async def register_new_user(request: CreateNewUser,
                  )
 async def get_user_by_id(user_id: int = Path(title="User Id",
                                              description="Id of registered User",
+                                             ge=1,
                                              ),
                          current_user: ActiveUser = Depends(get_current_user),
                          db: Session = Depends(db_session),
@@ -57,7 +58,9 @@ async def get_all_admin(current_user: ActiveUser = Depends(get_current_user),
                  )
 async def update_exist_user(request: UpdateUser,
                             user_id: int = Path(title="User Id",
-                                                description="Id of registered User"),
+                                                description="Id of registered User",
+                                                ge=1,
+                                                ),
                             current_user: ActiveUser = Depends(get_current_user),
                             db: Session = Depends(db_session)
                             ):
@@ -70,6 +73,7 @@ async def update_exist_user(request: UpdateUser,
                     )
 async def delete_exist_user(user_id: int = Path(title="User Id",
                                                 description="Id of registered User",
+                                                ge=1,
                                                 ),
                             current_user: ActiveUser = Depends(get_current_user),
                             db: Session = Depends(db_session),
