@@ -6,7 +6,7 @@ from typing import Type
 from fastapi import HTTPException, status
 
 
-def validate_user_id(current_user: ActiveUser, user_id: int):
+def validate_user_id(current_user: ActiveUser, user_id: int | None) -> bool:
     """Validate that used given user_id for update/delete is currently Active user"""
     current_user_id = current_user.id
     validate_id = user_id
@@ -15,7 +15,7 @@ def validate_user_id(current_user: ActiveUser, user_id: int):
     elif current_user_id == 1:
         return True
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail="You don't have access to change other Users credentials. "
+                        detail="You don't have access to other Users data. "
                                "Make sure to use registered ID of you own.",
                         )
 
