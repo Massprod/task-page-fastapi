@@ -67,3 +67,14 @@ class UpdateUser(BaseModel):
                               min_length=8,
                               max_length=100,
                               )
+
+
+class UpdateUserResponse(BaseModel):
+    id: int = Field(example=2,
+                    title="Id of a user which data was updated")
+    login: str = Field(example="Mark",
+                       title="Updated username",
+                       )
+
+    class Config:
+        orm_mode = True
