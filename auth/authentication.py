@@ -5,7 +5,7 @@ from database.database import db_session
 from database.crud.db_users import get_user
 from database.hash import Hash
 from auth import oauth2
-from schemas.schemas import AccessToken
+from schemas.user_schemas import AccessToken
 
 auth_router = APIRouter(tags=["authentication"])
 

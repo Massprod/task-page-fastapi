@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from database.models import DbTasks, DbUsers
-from schemas.schemas import CreateNewTask, UpdateTask, ActiveUser
+from schemas.user_schemas import ActiveUser
+from schemas.task_schemas import CreateNewTask, UpdateTask
 from fastapi import HTTPException, status
 from typing import Type
 
@@ -93,5 +94,3 @@ def delete_all_records(user: ActiveUser, db: Session) -> bool:
         db.delete(_)
     db.commit()
     return True
-
-

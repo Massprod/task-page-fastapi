@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from schemas.schemas import CreateNewTask, NewTaskResponse, ActiveUser, UpdateTask
-from schemas.schemas import AllTasksResponse, UpdateResponse, OneTaskResponse
+from schemas.user_schemas import ActiveUser
+from schemas.task_schemas import CreateNewTask, NewTaskResponse, UpdateTask
+from schemas.task_schemas import AllTasksResponse, UpdateTaskResponse, OneTaskResponse
 from database.crud.db_tasks import create_task, update_task, get_all_tasks, get_task, delete_task, delete_all_records
 from fastapi import HTTPException, status
 from fastapi.responses import HTMLResponse
@@ -33,17 +34,17 @@ def return_one_task(user: ActiveUser, task_id: int, db: Session) -> OneTaskRespo
                            )
 
 
-def update_existing_task(user: ActiveUser, task_id: int, request: UpdateTask, db: Session) -> UpdateResponse:
+def update_existing_task(user: ActiveUser, task_id: int, request: UpdateTask, db: Session) -> UpdateTaskResponse:
     """Update and return updated Task info, if it's exist and created by Active user"""
     user_id = user.id
     updated = update_task(task_id=task_id, user=user, db=db, request=request)
     if updated:
-        return UpdateResponse(user_id=user_id,
-                              updated=task_id,
-                              name=updated.name,
-                              description=updated.description,
-                              status=updated.status,
-                              )
+        return UpdateTaskResponse(user_id=user_id,
+                                  updated=task_id,
+                                  name=updated.name,
+                                  description=updated.description,
+                                  status=updated.status,
+                                  )
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                         detail=f"Task with ID: {task_id} not found.",
                         )
