@@ -37,11 +37,13 @@ class CreateNewUser(BaseModel):
                        title="Preferred username",
                        min_length=2,
                        max_length=50,
+                       regex="^[A-Za-z\d]{2,}$",  # all letters, numbers, at least 2
                        )
     password: str = Field(example="Aurelius",
                           title="Preferred password",
                           min_length=8,
                           max_length=100,
+                          regex="^[A-Za-z\d@$!%*#?&]{8,}$",  # all letters, numbers and special symbols, at least 8
                           )
 
 
@@ -62,11 +64,13 @@ class UpdateUser(BaseModel):
                            title="New username",
                            min_length=2,
                            max_length=50,
+                           regex="^[A-Za-z\d]{2,}$",
                            )
     new_password: str = Field(example="Maurelius",
                               title="New password",
                               min_length=8,
                               max_length=100,
+                              regex="^[A-Za-z\d@$!%*#?&]{8,}$",
                               )
 
 
@@ -89,7 +93,7 @@ class GetUser(BaseModel):
     login: str = Field(example="Mark",
                        title="Login of searched user",
                        )
-    user_tasks: list[OneTaskResponse]
+    user_tasks: list[OneTaskResponse] = Field(title="All Id associated Tasks")
 
     class Config:
         orm_mode = True
