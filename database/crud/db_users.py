@@ -1,8 +1,21 @@
 from sqlalchemy.orm import Session
 from database.models import DbUsers
-from schemas.schemas import CreateNewUser
+from schemas.user_schemas import CreateNewUser, ActiveUser, UpdateUser
 from database.hash import Hash
 from typing import Type
+from fastapi import HTTPException, status
+
+
+def validate_user_id(current_user: ActiveUser, user_id: int):
+    """Validate that used user_id is Active user"""
+    current_user_id = current_user.id
+    validate_id = user_id
+    if current_user_id == validate_id:
+        return True
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail="You don't have access to change other Users credentials. "
+                               "Make sure to use registered ID of you own.",
+                        )
 
 
 def create_user(db: Session, request: CreateNewUser) -> DbUsers:
@@ -26,33 +39,22 @@ def get_all_users(db: Session) -> list[Type[DbUsers]]:
 
 def get_user(user_id: int | None, login: str | None, db: Session) -> Type[DbUsers] | None:
     """Find record in DbUsers with given login or user_id. Returns found record."""
-    get_login = login.lower()
-    if user_id:
-        user = db.query(DbUsers).filter_by(id=user_id).first()
+    if login:
+        get_login = login.lower()
+        user = db.query(DbUsers).filter_by(login=get_login).first()
         return user
-    user = db.query(DbUsers).filter_by(login=get_login).first()
+    user = db.query(DbUsers).filter_by(id=user_id).first()
     return user
 
 
-def update_user(user_id: int | None, login: str | None, db: Session, request: CreateNewUser) -> Type[DbUsers] | bool:
+def update_user(user_id: int | None, db: Session, request: UpdateUser) -> Type[DbUsers] | bool:
     """Find record in DbUsers with given user_id or login. Update record with new data."""
-    new_login = request.login.lower().strip()
-    new_hash_password = Hash().bcrypt_pass(request.password).strip()
-    if user_id:
-        user = get_user(login=None, user_id=user_id, db=db)
-        if user is None:
-            return False  # can't use UPDATE on object given by .first()
-        db.query(DbUsers).filter_by(user_id=user_id).update({
-            DbUsers.login: new_login,
-            DbUsers.password: new_hash_password,
-        })
-        db.commit()
-        db.refresh(user)
-        return user
-    user = get_user(login=login, user_id=None, db=db)
+    new_login = request.new_login.lower().strip().replace(" ", "")
+    new_hash_password = Hash().bcrypt_pass(request.new_password.strip().replace(" ", ""))
+    user = get_user(login=None, user_id=user_id, db=db)
     if user is None:
-        return False
-    db.query(DbUsers).filter_by(login=login).update({
+        return False  # can't use UPDATE on object given by .first()
+    db.query(DbUsers).filter_by(id=user_id).update({
         DbUsers.login: new_login,
         DbUsers.password: new_hash_password,
     })
@@ -63,17 +65,18 @@ def update_user(user_id: int | None, login: str | None, db: Session, request: Cr
 
 def delete_user(user_id: int | None, login: str | None, db: Session) -> bool:
     """Delete record from DbUsers with given user_id or login."""
-    del_login = login.lower()
-    if user_id:
-        user = get_user(login=None, user_id=user_id, db=db)
+    if login:
+        del_login = login.lower()
+        user = get_user(login=del_login, user_id=None, db=db)
         if user is None:
             return False
         db.delete(user)
         db.commit()
         return True
-    user = get_user(login=del_login, user_id=None, db=db)
+    user = get_user(login=None, user_id=user_id, db=db)
     if user is None:
         return False
     db.delete(user)
     db.commit()
     return True
+
