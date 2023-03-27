@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, Path
 from sqlalchemy.orm import Session
 from database.database import db_session
-from schemas.schemas import CreateNewTask, ActiveUser, NewTaskResponse
-from schemas.schemas import UpdateTask, UpdateResponse, AllTasksResponse, OneTaskResponse
+from schemas.user_schemas import ActiveUser
+from schemas.task_schemas import CreateNewTask, NewTaskResponse, UpdateTaskResponse
+from schemas.task_schemas import UpdateTask, AllTasksResponse, OneTaskResponse
 from auth.oauth2 import get_current_user
 from routers.task_func.functional import create_new_task, update_existing_task, return_all_tasks
 from routers.task_func.functional import delete_one_task, return_one_task, delete_all_tasks
@@ -64,7 +65,7 @@ def get_one_task(task_id: int = Path(title="Task Id",
 
 @task_router.put("/{task_id}",
                  name="update task",
-                 response_model=UpdateResponse,
+                 response_model=UpdateTaskResponse,
                  description="Updating already existing task with new Data, "
                              "if it's created by currently Active user",
                  response_description="Successful response with Updated task data"
