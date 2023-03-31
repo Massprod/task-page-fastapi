@@ -24,15 +24,12 @@ def database() -> Session:
 
 @pytest.fixture(scope="function")
 def credentials() -> dict[str: str]:
-    credentials = {}
-    credentials["login"] = "".join(random.choices(string.ascii_letters + string.digits,
-                                                  k=random.randint(2, 50)
-                                                  )
-                                   ).lower()
-    credentials["password"] = "".join(random.choices(string.ascii_letters + string.digits,
-                                                     k=random.randint(8, 100)
-                                                     )
-                                      )
+    credentials = {
+        "login": "".join(random.choices(string.ascii_letters + string.digits,
+                                        k=random.randint(2, 50))).lower(),
+        "password": "".join(random.choices(string.ascii_letters + string.digits,
+                                           k=random.randint(8, 100)))
+    }
     return credentials
 
 
