@@ -135,9 +135,36 @@ async def test_delete_user_with_correct_token(test_client,
     assert exist is None
 
 
-# @pytest.mark.asyncio
-# async def test_delete_user_with_admin_access(test_client,
-#                                              database,
-#                                              admin_token,
-#                                              credentials,
-#                                              ):
+@pytest.mark.asyncio
+async def test_delete_user_with_admin_access(test_client,
+                                             database,
+                                             admin_token,
+                                             credentials,
+                                             ):
+    test_login = credentials["login"]
+    test_password = credentials["password"]
+    test_admin_token = await admin_token
+    not_registered_id = 10002
+    response = await test_client.post("user/new",
+                                      json={"login": test_login,
+                                            "password": test_password,
+                                            }
+                                      )
+    assert response.status_code == 200
+    new_id = response.json()["id"]
+    delete = await test_client.delete(f"user/{new_id}",
+                                      headers={"Authorization": f"Bearer {test_admin_token}"},
+                                      )
+    assert delete.status_code == 204
+    exist = database.query(DbUsers).filter_by(login=test_login).first()
+    assert exist is None
+    not_existing = await test_client.delete(f"user/{not_registered_id}",
+                                            headers={"Authorization": f"Bearer {test_admin_token}",
+                                                     }
+                                            )
+    assert not_existing.status_code == 404
+    admin_delete = await test_client.delete(f"user/1",
+                                            headers={"Authorization": f"Bearer {test_admin_token}",
+                                                     }
+                                            )
+    assert admin_delete.status_code == 403
