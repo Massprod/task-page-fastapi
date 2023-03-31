@@ -1,9 +1,13 @@
 import pytest
 from database.models import DbUsers
+from auth.oauth2 import create_access_token, get_current_user
+from fastapi import HTTPException
+from jose.exceptions import JWTError
 
 
 @pytest.mark.asyncio
 async def test_create_new_token_correct_credentials(test_client, database, credentials):
+    """Test creating of a new access-token with correct credentials and existing user"""
     test_login = credentials["login"]
     test_password = credentials["password"]
     registered = await test_client.post("user/new",
@@ -22,11 +26,10 @@ async def test_create_new_token_correct_credentials(test_client, database, crede
 
 
 @pytest.mark.asyncio
-async def test_create_new_token_incorrect_credentials(test_client, database, credentials):
-    """Test creating of a new user and getting a token"""
+async def test_get_new_token_incorrect_credentials(test_client, database, credentials):
+    """Test creating of a new access-token with incorrect credentials and existing user"""
     test_login = credentials["login"]
     test_password = credentials["password"]
-    exist = database.query(DbUsers).filter_by(login=test_login).first()
     response = await test_client.post("user/new",
                                       json={"login": test_login,
                                             "password": test_password,
@@ -49,3 +52,36 @@ async def test_create_new_token_incorrect_credentials(test_client, database, cre
                                                       }
                                                 )
     assert incorrect_password.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_with_incorrect_token_data(database):
+    """Test function for getting active-user with incorrect token data"""
+    test_data = {"subb": "testSubb"}
+    test_token = create_access_token(data=test_data)
+    with pytest.raises(HTTPException):
+        get_current_user(token=test_token, db=database)
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_jwt_exception_with_correct_token_data(mocker, database, access_token):
+    """
+    Test function for getting active-user with correct token data,
+    but raised JWT exception by jwt_decode
+    """
+    test_token = await access_token
+    mocker.patch("auth.oauth2.jwt.decode", side_effect=JWTError)
+    with pytest.raises(HTTPException):
+        get_current_user(token=test_token, db=database)
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_with_not_existing_user_data(database):
+    """
+    Test function for getting active-user with correct token,
+    but unregistered user data
+    """
+    test_data = {"sub": "testSubb"}
+    test_token = create_access_token(data=test_data)
+    with pytest.raises(HTTPException):
+        get_current_user(token=test_token, db=database)
