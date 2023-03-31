@@ -14,16 +14,19 @@ def base_url() -> str:
 
 @pytest.fixture(scope="session")
 def test_client(base_url) -> AsyncClient:
+    """Testing httpx client"""
     return AsyncClient(app=app, base_url=base_url)
 
 
 @pytest.fixture(scope="session")
 def database() -> Session:
+    """Database session"""
     return next(override_db_session())
 
 
 @pytest.fixture(scope="function")
 def credentials() -> dict[str: str]:
+    """Create random login/password combos"""
     credentials = {
         "login": "".join(random.choices(string.ascii_letters + string.digits,
                                         k=random.randint(2, 50))).lower(),
@@ -35,6 +38,7 @@ def credentials() -> dict[str: str]:
 
 @pytest.fixture(scope="function")
 async def access_token(test_client, credentials) -> str:
+    """Register new user and return access-token for this user."""
     token_login = credentials["login"]
     token_password = credentials["password"]
     registered = await test_client.post("user/new",
@@ -47,6 +51,20 @@ async def access_token(test_client, credentials) -> str:
                                       headers={"content-type": "application/x-www-form-urlencoded"},
                                       data={"username": token_login,
                                             "password": token_password,
+                                            },
+                                      )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    return token
+
+
+@pytest.fixture(scope="function")
+async def admin_token(test_client) -> str:
+    """Get admin access-token"""
+    response = await test_client.post("token",
+                                      headers={"content-type": "application/x-www-form-urlencoded"},
+                                      data={"username": "admin",
+                                            "password": "admin",
                                             },
                                       )
     assert response.status_code == 200
