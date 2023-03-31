@@ -47,9 +47,10 @@ async def access_token(test_client, credentials) -> str:
                                         )
     assert registered.status_code == 200
     response = await test_client.post("token",
-                                      headers={"username": token_login,
-                                               "password": token_password,
-                                               }
+                                      headers={"content-type": "application/x-www-form-urlencoded"},
+                                      data={"username": token_login,
+                                            "password": token_password,
+                                            },
                                       )
     assert response.status_code == 200
     token = response.json()["access_token"]
