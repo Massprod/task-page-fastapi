@@ -21,4 +21,4 @@ def override_db_session():
         db.close()
 
 
-app.dependency_overrides[db_session] = override_db_session()
+app.dependency_overrides[db_session] = override_db_session
