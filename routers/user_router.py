@@ -23,7 +23,7 @@ async def register_new_user(request: CreateNewUser,
     return create_new_user(request, db)
 
 
-@user_router.get("{user_id}",
+@user_router.get("/{user_id}",
                  name="Get User",
                  response_model=GetUser,
                  description="Get data on given user_id and created Tasks by it. Only for Admin access.",
@@ -51,7 +51,7 @@ async def get_all_admin(current_user: ActiveUser = Depends(get_current_user),
     return get_all(current_user=current_user, db=db)
 
 
-@user_router.put("{user_id}",
+@user_router.put("/{user_id}",
                  name="Update user",
                  response_model=UpdateUserResponse,
                  response_description="Successful response with Id and New login of updated User"
@@ -67,7 +67,7 @@ async def update_exist_user(request: UpdateUser,
     return update_user_credentials(request=request, user_id=user_id, current_user=current_user, db=db)
 
 
-@user_router.delete("{user_id}",
+@user_router.delete("/{user_id}",
                     name="Delete User",
                     description="Delete user and all associated Tasks data from Db with given UserId as identifier",
                     )
