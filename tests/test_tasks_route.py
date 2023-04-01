@@ -197,3 +197,75 @@ async def test_update_task(database,
     assert not_exist.status_code == 404
 
 
+@pytest.mark.asyncio
+async def test_delete_one_task(access_token,
+                               database,
+                               task_data,
+                               test_client,
+                               ):
+    """
+    Test deleting one task created by active user with access-token.
+    Test trying to delete not existing task with correct access-token.
+    """
+    test_token = await access_token
+    test_data = task_data
+    response = await test_client.post("task/new",
+                                      json=test_data,
+                                      headers={"Authorization": f"Bearer {test_token}"},
+                                      )
+    assert response.status_code == 200
+    exist = database.query(DbTasks).filter_by(name=test_data["name"]).first()
+    assert exist
+    test_task_id = exist.task_id
+    delete_correct = await test_client.delete(f"task/{test_task_id}",
+                                              headers={"Authorization": f"Bearer {test_token}"},
+                                              )
+    assert delete_correct.status_code == 204
+    exist = database.query(DbTasks).filter_by(name=test_data["name"]).first()
+    assert exist is None
+    delete_incorrect = await test_client.delete(f"task/{test_task_id}",
+                                                headers={"Authorization": f"Bearer {test_token}"},
+                                                )
+    assert delete_incorrect.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_delete_update_with_admin_token(admin_token,
+                                                  access_token,
+                                                  task_data,
+                                                  test_client,
+                                                  database,
+                                                  ):
+    """
+    Test get, update, delete tasks with admin access-token.
+    """
+    test_admin_token = await admin_token
+    test_token = await access_token
+    test_data = task_data
+    test_new_data = {"name": "updated_name_by_admin",
+                     "description": "updated_description1_by_admin",
+                     "status": True,
+                     }
+    response = await test_client.post("task/new",
+                                      json=test_data,
+                                      headers={"Authorization": f"Bearer {test_token}"},
+                                      )
+    assert response.status_code == 200
+    exist = database.query(DbTasks).filter_by(name=test_data["name"]).first()
+    assert exist
+    test_task_id = exist.task_id
+    update_task = await test_client.put(f"task/{test_task_id}",
+                                        json=test_new_data,
+                                        headers={"Authorization": f"Bearer {test_admin_token}"},
+                                        )
+    assert update_task.status_code == 200
+    database.refresh(exist)
+    assert exist.name == test_new_data["name"]
+    get_task = await test_client.get(f"task/{test_task_id}",
+                                     headers={"Authorization": f"Bearer {test_admin_token}"},
+                                     )
+    assert get_task.status_code == 200
+    delete_task = await test_client.delete(f"task/{test_task_id}",
+                                           headers={"Authorization": f"Bearer {test_admin_token}"},
+                                           )
+    assert delete_task.status_code == 204
