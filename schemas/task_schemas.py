@@ -21,6 +21,8 @@ class NewTaskResponse(BaseModel):
     user_id: int = Field(example=1,
                          title="ID of called user",
                          )
+    task_id: int = Field(example=1,
+                         title="Id of newly created task")
     added: bool = True
     name: str = Field(example="stay calm",
                       title="Name of a new Task",
