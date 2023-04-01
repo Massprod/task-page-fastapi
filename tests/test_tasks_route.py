@@ -122,3 +122,78 @@ async def test_get_one_task_with_incorrect_token_and_empty_tasks(access_token,
                                            headers={"Authorization": f"Bearer {test_incorrect_token}"},
                                            )
     assert incorrect_call.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_delete_all_tasks(database,
+                                task_data,
+                                access_token,
+                                test_client,
+                                ):
+    """
+    Test deleting all tasks associated with access-token user_id.
+    Test deleting all tasks associated with access-token user_id if user don't have any task records.
+    """
+    test_token = await access_token
+    test_data = task_data
+    test_number = 4
+    for x in range(test_number):
+        response = await test_client.post("task/new",
+                                          json=test_data,
+                                          headers={"Authorization": f"Bearer {test_token}"},
+                                          )
+        assert response.status_code == 200
+        test_task_id = response.json()["task_id"]
+        exist = database.query(DbTasks).filter_by(task_id=test_task_id).first()
+        assert exist
+    delete_all_exist = await test_client.delete("task/all",
+                                                headers={"Authorization": f"Bearer {test_token}"},
+                                                )
+    assert delete_all_exist.status_code == 204
+    delete_all_not_exist = await test_client.delete("task/all",
+                                                    headers={"Authorization": f"Bearer {test_token}"},
+                                                    )
+    assert delete_all_not_exist.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_update_task(database,
+                           task_data,
+                           access_token,
+                           test_client,
+                           ):
+    """
+    Test updating existing task records associated with active user_id and access-token.
+    Test trying to update not existing records with active user_id and access-token.
+    """
+    test_token = await access_token
+    test_data = task_data
+    test_new_data = {"name": "updated_name",
+                     "description": "updated_description1",
+                     "status": True,
+                     }
+    test_not_exist = 10002
+    response = await test_client.post("task/new",
+                                      json=test_data,
+                                      headers={"Authorization": f"Bearer {test_token}"},
+                                      )
+    assert response.status_code == 200
+    test_task_id = response.json()["task_id"]
+    exist = database.query(DbTasks).filter_by(name=test_data["name"]).first()
+    assert exist
+    update_correct = await test_client.put(f"task/{test_task_id}",
+                                           json=test_new_data,
+                                           headers={"Authorization": f"Bearer {test_token}"},
+                                           )
+    assert update_correct.status_code == 200
+    update_exist = database.query(DbTasks).filter_by(name=test_new_data["name"]).first()
+    database.refresh(update_exist)
+    assert update_exist
+    assert update_exist.status is True
+    not_exist = await test_client.put(f"task/{test_not_exist}",
+                                      json=test_new_data,
+                                      headers={"Authorization": f"Bearer {test_token}"},
+                                      )
+    assert not_exist.status_code == 404
+
+
