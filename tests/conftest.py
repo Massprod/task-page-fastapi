@@ -1,4 +1,4 @@
-from tests.user_fixtures import *
+from tests.fixtures import *
 from conf_test_db import override_db_session
 from database.models import DbUsers
 from database.hash import Hash
