@@ -88,6 +88,7 @@ def delete_task(user: ActiveUser, task_id: int, db: Session) -> bool:
 
 
 def delete_all_records(user: ActiveUser, db: Session) -> bool:
+    """Delete all created records for active-user"""
     user_id = user.id
     all_tasks = db.query(DbUsers).filter_by(id=user_id).first().user_tasks
     if len(all_tasks) == 0:

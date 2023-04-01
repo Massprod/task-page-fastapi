@@ -5,6 +5,7 @@ from database.hash import Hash
 
 
 def pytest_sessionstart():
+    """Create admin_record in db before running any tests"""
     sess = next(override_db_session())
     sess.add(DbUsers(id=1,
                      login="admin",
