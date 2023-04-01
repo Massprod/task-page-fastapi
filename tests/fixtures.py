@@ -102,7 +102,6 @@ async def another_access_token(test_client, another_credentials) -> str:
                                             },
                                       )
     assert response.status_code == 200
-    print(response.json())
     another_token = response.json()["access_token"]
     return another_token
 
