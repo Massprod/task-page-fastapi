@@ -23,6 +23,18 @@ async def register_new_user(request: CreateNewUser,
     return create_new_user(request, db)
 
 
+@user_router.get("/all",
+                 name="Get all users",
+                 response_model=GetAllUsers,
+                 description="Getting list of  all existing users. Only for Admin access.",
+                 response_description="Successful response with a list of all users data",
+                 )
+async def get_all_admin(current_user: ActiveUser = Depends(get_current_user),
+                        db: Session = Depends(db_session),
+                        ):
+    return get_all(current_user=current_user, db=db)
+
+
 @user_router.get("/{user_id}",
                  name="Get User",
                  response_model=GetUser,
@@ -37,18 +49,6 @@ async def get_user_by_id(user_id: int = Path(title="User Id",
                          db: Session = Depends(db_session),
                          ):
     return get_user_data(user_id, current_user, db)
-
-
-@user_router.get("/all",
-                 name="Get all users",
-                 response_model=GetAllUsers,
-                 description="Getting list of  all existing users. Only for Admin access.",
-                 response_description="Successful response with a list of all users data",
-                 )
-async def get_all_admin(current_user: ActiveUser = Depends(get_current_user),
-                        db: Session = Depends(db_session),
-                        ):
-    return get_all(current_user=current_user, db=db)
 
 
 @user_router.put("/{user_id}",
