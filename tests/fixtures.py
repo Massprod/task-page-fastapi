@@ -37,7 +37,7 @@ def credentials() -> dict:
 
 
 @pytest.fixture(scope="function")
-def another_credentials() -> dict:
+def another_credentials() -> dict:  # is there's way to call fixtures twice in one test? If revisit change it!
     """Create random login/password combos"""
     another_credentials = {
         "login": "".join(random.choices(string.ascii_letters + string.digits,
