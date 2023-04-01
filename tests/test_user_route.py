@@ -249,6 +249,7 @@ async def test_get_all_users_with_admin_token(admin_token,
                                               }
                                      )
     assert response.status_code == 200
+    assert type(response.json()) is list
 
 
 @pytest.mark.asyncio
