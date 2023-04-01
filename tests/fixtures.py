@@ -25,7 +25,7 @@ def database() -> Session:
 
 
 @pytest.fixture(scope="function")
-def credentials() -> dict[str: str]:
+def credentials() -> dict:
     """Create random login/password combos"""
     credentials = {
         "login": "".join(random.choices(string.ascii_letters + string.digits,
@@ -34,6 +34,20 @@ def credentials() -> dict[str: str]:
                                            k=random.randint(8, 100)))
     }
     return credentials
+
+
+@pytest.fixture(scope="function")
+def task_data() -> dict:
+    task_data = {
+        "name": "".join(random.choices(string.ascii_letters + string.digits,
+                                       k=random.randint(1, 50))
+                        ),
+        "description": "".join(random.choices(string.ascii_letters + string.digits,
+                                              k=random.randint(1, 300))
+                               ),
+        "status": False
+    }
+    return task_data
 
 
 @pytest.fixture(scope="function")
